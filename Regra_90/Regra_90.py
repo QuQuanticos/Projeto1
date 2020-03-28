@@ -33,7 +33,8 @@ def Rule_90(Cellular_Automaton):
     
 -------------------------------------------------------------------------------
     Inputs:
-        Cellular_Automaton: Autômato no passo atual como array (n, Width).
+        Cellular_Automaton: evolução do autômato até o atual n-ésimo passo como
+        array (n, Width).
         
 -------------------------------------------------------------------------------
     Outputs:
@@ -62,11 +63,11 @@ def Main(Number_of_Steps = 5):
     Width = 2*Number_of_Steps + 1 #Garante que Width é ímpar e, portanto,
     #temos uma única célula no centro
     
-    print("Step 1")
+    print('Passo 1')
     Cellular_Automaton = Initiate_Cellular_Automaton(Width)
     
     for i in range(Number_of_Steps-1):
-        print("Step " + str(i+2))
+        print('Passo ' + str(i+2))
         Cellular_Automaton = Rule_90(Cellular_Automaton)
     
     return Cellular_Automaton
@@ -79,7 +80,9 @@ def Plot(Cellular_Automaton):
     
 -------------------------------------------------------------------------------
     Inputs:
-        Number_of_Steps: Número de passos da evolução do autômato.
+        Cellular_Automaton: evolução do autômato celular ao longo de todos os
+        passos na forma de um array (número de passo, 2*número de passo + 1) 
+        de zeros (casas brancas) e uns (casas pretas).
     '''
     
     Number_of_Steps = Cellular_Automaton.shape[0]
@@ -108,5 +111,5 @@ def Plot(Cellular_Automaton):
 
 #%%
 
-Cellular_Automaton = Main(500)
+Cellular_Automaton = Main(50)
 Plot(Cellular_Automaton)
