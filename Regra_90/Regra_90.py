@@ -2,10 +2,11 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 #%% Generating First Step
 
-def Initiate_Cellular_Automaton(Width):
+def Initiate_Cellular_Automaton(Width, Random):
     '''
     Cria condição inicial (chamado de "step 1" pelo Wolfram) de uma única
     célula preta no centro do autômato.
@@ -19,8 +20,12 @@ def Initiate_Cellular_Automaton(Width):
         First_Step: Autômato na condiação inicial.
     '''
     
-    First_Step = np.full((1, Width), 0)
-    First_Step[0][int(Width/2)] = 1
+    if Random:
+        First_Step = np.random.randint(0,2, (1,Width))
+    
+    else:
+        First_Step = np.full((1, Width), 0)
+        First_Step[0][int(Width/2)] = 1
     
     return First_Step
 
@@ -47,7 +52,7 @@ def Rule_90(Cellular_Automaton):
 
 #%% Running
 
-def Main(Number_of_Steps = 5):
+def Main(Number_of_Steps = 5, Random = False):
     '''
     Executa os vários passos para o autômato definido pela regra 90.
     
@@ -64,7 +69,7 @@ def Main(Number_of_Steps = 5):
     #temos uma única célula no centro
     
     print('Passo 1')
-    Cellular_Automaton = Initiate_Cellular_Automaton(Width)
+    Cellular_Automaton = Initiate_Cellular_Automaton(Width, Random)
     
     for i in range(Number_of_Steps-1):
         print('Passo ' + str(i+2))
@@ -107,7 +112,13 @@ def Plot(Cellular_Automaton):
                      verticalalignment='center', horizontalalignment='left',
                      color='w', bbox={'facecolor': 'red', 'alpha': 1, 'pad': 5})
     
-    plt.savefig('Regra90_'+str(Number_of_Steps)+'passos.png', bbox_inches='tight', dpi=200)
+    # Não sobrescrever imagem
+    outfilename = 'Regra90_'+str(Number_of_Steps)+'passos_'
+    i = 0
+    while os.path.exists(outfilename + str(i) + '.png'):
+        i += 1
+        
+    plt.savefig(outfilename + str(i) + '.png', bbox_inches='tight', dpi=200)
 
 #%%
 
