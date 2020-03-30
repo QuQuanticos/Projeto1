@@ -13,10 +13,15 @@ def Initiate_Cellular_Automaton(Width, Random):
     
 -------------------------------------------------------------------------------
     Inputs:
+        
         Width: Número de células do autômato, i.e., largura da malha.
+        
+        Random: Define se o estado inicial deve ser aleatório ou com célula
+        central sendo a única preta.
         
 -------------------------------------------------------------------------------
     Outputs:
+        
         First_Step: Autômato na condiação inicial.
     '''
     
@@ -32,6 +37,21 @@ def Initiate_Cellular_Automaton(Width, Random):
 #%% ANY RULE
 
 def Any_Rule(Cellular_Automaton, Rule_Binary):
+    '''
+    Executa uma regra para obter o próximo passo de um autômato.
+    
+-------------------------------------------------------------------------------
+    Inputs:
+        
+        Cellular_Automaton: Evolução do autômato celular até o passo atual.
+        
+        Rule_Binary: Sequência de potência da regra em base binária.
+        
+-------------------------------------------------------------------------------
+    Outputs:
+        
+        Evolução do autômato celular até o novo passo.
+    '''
     
     #Define o estado para cada célula de acordo com suas vizinhas
     left = np.roll(Cellular_Automaton[-1:],-1)
@@ -39,6 +59,7 @@ def Any_Rule(Cellular_Automaton, Rule_Binary):
     right = np.roll(Cellular_Automaton[-1:],1)
     Current_State = np.packbits([right,center,left], axis = 0, bitorder = 'little')[0]
     
+    #Aplica a regra
     New_Step = Rule_Binary[Current_State]
     
     return np.concatenate((Cellular_Automaton, New_Step))
@@ -52,11 +73,20 @@ def Main(Rule = 90, Number_of_Steps = 5, Random = False):
     
 -------------------------------------------------------------------------------
     Inputs:
+        
+        Rule: Número da regra que define o autômato segundo conveção.
+        
         Number_of_Steps: Número de passos da evolução do autômato.
+        
+        Random: Define se o estado inicial deve ser aleatório ou com célula
+        central sendo a única preta.
         
 -------------------------------------------------------------------------------
     Outputs:
-        Autômato concatenado com novo passo, resultando em array (n+1, Width).
+        
+        Cellular_Automaton: evolução do autômato celular ao longo de todos os
+        passos na forma de um array (número de passo, 2*número de passo + 1) 
+        de zeros (casas brancas) e uns (casas pretas).
     '''
     
     Width = 2*Number_of_Steps + 1 #Garante que Width é ímpar e, portanto,
@@ -70,10 +100,11 @@ def Main(Rule = 90, Number_of_Steps = 5, Random = False):
     #Cria array das potências na base binária
     Rule_Binary = np.flip(np.unpackbits(np.uint8(Rule)))
     
+    # Loop dos passos
     for i in range(Number_of_Steps-1):
         print('Passo ' + str(i+2))
         Cellular_Automaton = Any_Rule(Cellular_Automaton, Rule_Binary)
-        
+    
     Plot(Cellular_Automaton, Rule)
     
     return Cellular_Automaton
@@ -86,9 +117,12 @@ def Plot(Cellular_Automaton, Rule):
     
 -------------------------------------------------------------------------------
     Inputs:
-        Cellular_Automaton: evolução do autômato celular ao longo de todos os
+        
+        Cellular_Automaton: Evolução do autômato celular ao longo de todos os
         passos na forma de um array (número de passo, 2*número de passo + 1) 
         de zeros (casas brancas) e uns (casas pretas).
+        
+        Rule: Número da regra que define o autômato segundo conveção.
     '''
     
     Number_of_Steps = Cellular_Automaton.shape[0]
@@ -123,4 +157,6 @@ def Plot(Cellular_Automaton, Rule):
 
 #%%
 
-Cellular_Automaton = Main(90,5)
+# Coloque o número da regra, o número de passos (condição inicial = passo 1) e
+# se o passo 1 deve ou não ser aleatório ('True' ou 'False').
+Cellular_Automaton = Main(90, 5)
