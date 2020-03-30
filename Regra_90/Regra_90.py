@@ -29,32 +29,26 @@ def Initiate_Cellular_Automaton(Width, Random):
     
     return First_Step
 
-#%% Rule 90
+#%% ANY RULE
 
-def Rule_90(Cellular_Automaton):
-    '''
-    Aplica a Regra 90: a célula será preta no próximo passo caso uma, e apenas
-    uma, de suas vizinhas for preta; do contrário, será branca.
+def Any_Rule(Cellular_Automaton, Rule_Binary):
     
--------------------------------------------------------------------------------
-    Inputs:
-        Cellular_Automaton: evolução do autômato até o atual n-ésimo passo como
-        array (n, Width).
-        
--------------------------------------------------------------------------------
-    Outputs:
-        Autômato concatenado com novo passo, resultando em array (n+1, Width).
-    '''
+    #Define o estado para cada célula de acordo com suas vizinhas
+    left = np.roll(Cellular_Automaton[-1:],-1)
+    center = Cellular_Automaton[-1:]
+    right = np.roll(Cellular_Automaton[-1:],1)
+    Current_State = np.packbits([right,center,left], axis = 0, bitorder = 'little')[0]
     
-    New_Step = (np.roll(Cellular_Automaton[-1:],1) + np.roll(Cellular_Automaton[-1:],-1)) % 2
+    New_Step = Rule_Binary[Current_State]
     
     return np.concatenate((Cellular_Automaton, New_Step))
 
+
 #%% Running
 
-def Main(Number_of_Steps = 5, Random = False):
+def Main(Rule = 90, Number_of_Steps = 5, Random = False):
     '''
-    Executa os vários passos para o autômato definido pela regra 90.
+    Executa os vários passos para o autômato definido por uma regra.
     
 -------------------------------------------------------------------------------
     Inputs:
@@ -71,15 +65,22 @@ def Main(Number_of_Steps = 5, Random = False):
     print('Passo 1')
     Cellular_Automaton = Initiate_Cellular_Automaton(Width, Random)
     
+    if Rule > 255: Rule = 0 # Segurança
+    
+    #Cria array das potências na base binária
+    Rule_Binary = np.flip(np.unpackbits(np.uint8(Rule)))
+    
     for i in range(Number_of_Steps-1):
         print('Passo ' + str(i+2))
-        Cellular_Automaton = Rule_90(Cellular_Automaton)
+        Cellular_Automaton = Any_Rule(Cellular_Automaton, Rule_Binary)
+        
+    Plot(Cellular_Automaton, Rule)
     
     return Cellular_Automaton
 
 #%% Plotting
 
-def Plot(Cellular_Automaton):
+def Plot(Cellular_Automaton, Rule):
     '''
     Gera imagem da evolução do autômato em todos os passos.
     
@@ -113,7 +114,7 @@ def Plot(Cellular_Automaton):
                      color='w', bbox={'facecolor': 'red', 'alpha': 1, 'pad': 5})
     
     # Não sobrescrever imagem
-    outfilename = 'Regra90_'+str(Number_of_Steps)+'passos_'
+    outfilename = 'Regra'+str(Rule)+'_'+str(Number_of_Steps)+'passos_'
     i = 0
     while os.path.exists(outfilename + str(i) + '.png'):
         i += 1
@@ -122,5 +123,4 @@ def Plot(Cellular_Automaton):
 
 #%%
 
-Cellular_Automaton = Main(50)
-Plot(Cellular_Automaton)
+Cellular_Automaton = Main(90,5)
